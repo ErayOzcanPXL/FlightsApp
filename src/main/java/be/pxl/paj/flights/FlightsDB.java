@@ -18,8 +18,7 @@ import java.util.Properties;
  */
 public class FlightsDB {
     public static final String QUERY_CUSTOMER_PREP_STATEMENT =
-        "SELECT * FROM customer \n" +
-        "WHERE handle = ? AND password = ?";
+        "SELECT * FROM CUSTOMER WHERE handle = ? AND password = ?";
 
     private PreparedStatement queryCustomer;
 
@@ -57,7 +56,6 @@ public class FlightsDB {
      * Performs additional preparation after the connection is opened.
      */
     public void init() throws SQLException {
-    	// TODO: create prepared statements here
         queryCustomer = conn.prepareStatement(QUERY_CUSTOMER_PREP_STATEMENT);
     }
 
@@ -71,8 +69,12 @@ public class FlightsDB {
         queryCustomer.setString(2, password);
 
         ResultSet result = queryCustomer.executeQuery();
-        if (!result.next()) return null;
-        return new User(result.getInt("uid"), result.getString("handle"), result.getString("name"));
+        User user = null;
+        if (result.next()) user = new User(result.getInt("uid"),
+                result.getString("handle"), result.getString("name"));
+
+        result.close();
+        return user;
     }
 
     /**
